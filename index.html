@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>index.knit</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="custom.css" type="text/css" />
+    <link rel="stylesheet" href="bootstrap.min.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+class: center, middle
+background-image: url(imgs/LOGO-bigA-3101.jpg),url(imgs/cbi.png),url(imgs/logo_UT3_RVB.png)
+background-position: 100% 0%,25% 100%,75% 100%
+background-size: 28%,15%,20%
+
+## .center[__Group Meeting bigA__]
+
+### .center[Studying 3D DNA conformation with __Hi-C__.]
+
+&lt;hr /&gt;
+
+.large[Vincent ROCHER | bigA | 03/02/2022]
+
+
+---
+
+.pull-left[
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Biologist-friendly 
+
+* Omic data.
+* HiC pipelines.
+* HiC visualisation. 
+
+]
+.pull-right[
+&lt;img src="imgs/wind-in-hair-fabulous-wind.gif" width="70%" /&gt;
+]
+
+--
+
+.pull-left[
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Bioinfo-friendly
+
+* Code details.
+* Statistical/Algorithmic stuffs.
+]
+.pull-right[
+&lt;img src="imgs/20120801012312I.png" width="70%" /&gt;
+]
+
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; HiC capture the chromosome conformation within the nucleus
+&lt;br&gt;
+&lt;br&gt;
+.center[
+&lt;img src="imgs/hic_purpose.svg" width="80%" /&gt;
+
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; HiC capture the chromosome conformation within the nucleus
+&lt;br&gt;
+&lt;br&gt;
+.center[
+&lt;img src="imgs/hictechno.svg" width="80%" /&gt;
+
+#### &lt;a name=cite-rao20143d&gt;&lt;/a&gt;([Rao, Huntley, Durand, Stamenova, Bochkov, Robinson, Sanborn, Machol, Omer, Lander, and others, 2014](#bib-rao20143d))
+
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; HiC capture the chromosome conformation within the nucleus
+&lt;br&gt;
+&lt;br&gt;
+.center[
+&lt;img src="imgs/hicmapping.svg" width="80%" /&gt;
+
+#### Hi-C mapping to Hi-C interaction map &lt;a name=cite-durand2016juicer&gt;&lt;/a&gt;([Durand, Shamim, Machol, Rao, Huntley, Lander, and Aiden, 2016](#bib-durand2016juicer))
+
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; HiC capture the chromosome conformation within the nucleus
+
+.center[
+&lt;img src="imgs/HiC_landscape.svg" width="80%" /&gt;
+
+#### Key 3D features of chromatin folding can be visualized with multiple resolutions 
+
+#### &lt;a name=cite-kempfer2020methods&gt;&lt;/a&gt;([Kempfer and Pombo, 2020](#bib-kempfer2020methods))
+#### &lt;a name=cite-arnould2021loop&gt;&lt;/a&gt;([Arnould, Rocher, Finoux, Clouaire, Li, Zhou, Caron, Mangeot, Ricci, Mourad, and others, 2021](#bib-arnould2021loop))
+
+]
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Where to find public HiC data
+
+* [GEO](https://www.ncbi.nlm.nih.gov/geo/) / [ArrayExpress](https://www.ebi.ac.uk/arrayexpress/).
+* [UCSC](https://genome.ucsc.edu/).
+* [4DN Data Portal](https://data.4dnucleome.org/).
+* 3D genome browsers ([JuiceBox](https://www.aidenlab.org/juicebox/) / [HiGlass](http://higlass.io/)).
+
+
+.center[
+&lt;iframe src="https://data.4dnucleome.org/" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
+
+]
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Variations of Hi-C methods
+
+* Micro-C/DNase Hi-C
+  * Using either MNase or DNase instead of restriction enzymes.
+* Capture Hi-C (promoter/custom).
+* HiChIP (Hi-C + ChIP-seq).
+* 4C-seq (One _locus_ against all).
+
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Hi-C technologies 
+
+### [Arima genomic](https://arimagenomics.com/) kits
+
+* Hi-C using restriction enzymes.
+* Hi-C/ChIP-seq using restriction enzymes (Hi-ChIP).
+* Promoter/Custom Capture-HiC.
+
+
+### [Dovetail Genomics](https://dovetailgenomics.com/) kits
+
+* Hi-C using restriction enzymes.
+* Hi-C using MNase (Micro-C).
+* Hi-C/ChIP-seq using MNase (Hi-ChIP).
+* "Targeted Enrichment Panels" Hi-C (Capture-HiC).
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Hi-C resolution
+
+
+.center[
+
+| Study                           | Organism     | Number of reads | Resolution |
+|---------------------------------|--------------|-----------------|------------|
+| Lieberman-Aiden et al. 2009     | Human        | 30M             | 1 mb       |
+| Sexton et al. 2012              | Drosophila   | 362.7M          | 10 kb      |
+| Dixon et al. 2012               | Human, mouse | 806.1M          | 40 kb      |
+| Jin et al. 2013                 | Human        | 2.9B            | 5 kb       |
+| Rao et al. 2014                 | Human, mouse | 6.5B            | 950 bp     |
+
+#### &lt;a name=cite-pal2019hi&gt;&lt;/a&gt;([Pal, Forcato, and Ferrari, 2019](#bib-pal2019hi))
+
+]
+
+&gt;  [Arima Genomics:](https://arimagenomics.com/faqs/#:~:text=Each%20Arima%2DHiC%2B%20kit%20contains,~600M%20raw%20read%2Dpairs.) For a mammalian genome of 3 Gb, we recommend sequencing two biological replicates per biological condition. For high-resolution analysis of A/B compartments, topologically associating domains (TADs), and chromatin loops, the desired read depth is &gt;600 million paired-end reads for each replicate.  For shallow sequencing used in library QC, we recommend at least 1 million paired-end reads. 
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Hi-C running time
+
+### .red[Hi-C processing and analysis are expensive]
+
+* High resolution Hi-C reads cannot be aligned on a personal computer.
+* For `50Go` of reads (~500 million pairs) : 
+  * Alignment (`bwa mem`) running time (16 threads) : ~7h
+  * ~`400Go` of output files (`Juicer`).
+  * ~`1.5To` of temporary files.
+
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; HiC pipelines
+
+### Juicer
+
+`juicer.sh -t 12 -d /HiC -z genome.fa -p chrom.sizes -y restriction_enzyme.txt -s DpnII`
+
+* JuicerTools ([Durand, Shamim, Machol, et al., 2016](#bib-durand2016juicer))
+* Output a `.hic` file (non human readable)
+
+### distiller (previously hiclib)
+
+`nextflow run distiller.nf -params-file config.yml`
+
+* distiller pipeline: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3350937.svg)](https://doi.org/10.5281/zenodo.3350937)
+* Output a `.mcool` file (non human readable)
+
+
+### HiC-pro
+
+`HiC-Pro -p 12 -i /HiC -o /OUT -c config.txt`
+
+* HiC-Pro &lt;a name=cite-servant2015hic&gt;&lt;/a&gt;([Servant, Varoquaux, Lajoie, Viara, Chen, Vert, Heard, Dekker, and Barillot, 2015](#bib-servant2015hic))
+* Output contact maps as a triplet sparse format : `bin_i / bin_j / counts_ij`
+* Exist as Nextflow pipeline:
+
+`nextflow run nf-core/hic --input '*_R{1,2}.fastq.gz' -profile docker --genome 'hg19' --digestion 'dnpii'`
+
+#### `config.yml/.txt` will contain chromosome sizes, reference genome, which digestion enzyme is used ....
+
+
+---
+
+### &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Collaboration network of top 70 labs in 3D Genome from years 2017-2021
+
+.center[
+&lt;div class="figure"&gt;
+&lt;img src="imgs/2017-2021.coauthors.png" alt="https://github.com/XiaoTaoWang/Best-Labs-of-3D-Genome" width="80%" /&gt;
+&lt;p class="caption"&gt;https://github.com/XiaoTaoWang/Best-Labs-of-3D-Genome&lt;/p&gt;
+&lt;/div&gt;
+]
+
+
+
+
+---
+class: split-40
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #f39c12;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; HiC mapping strategy
+
+
+.center[
+&lt;div class="figure"&gt;
+&lt;img src="imgs/mapping.png" alt="TADbit mapping strategy. https://3dgenomes.github.io/TADbit/tutorial/tutorial_4-Mapping.html" width="50%" /&gt;
+&lt;p class="caption"&gt;TADbit mapping strategy. https://3dgenomes.github.io/TADbit/tutorial/tutorial_4-Mapping.html&lt;/p&gt;
+&lt;/div&gt;
+]
+
+1. Iterative mapping &lt;a name=cite-imakaev2012iterative&gt;&lt;/a&gt;([Imakaev, Fudenberg, McCord, Naumova, Goloborodko, Lajoie, Dekker, and Mirny, 2012](#bib-imakaev2012iterative)).
+
+2. Split mapping.  
+
+3. Pre-truncating reads &lt;a name=cite-ay2015analysis&gt;&lt;/a&gt;&lt;a name=cite-wingett2015hicup&gt;&lt;/a&gt;([Ay and Noble, 2015](#bib-ay2015analysis); [Wingett, Ewels, Furlan-Magaril, Nagano, Schoenfelder, Fraser, and Andrews, 2015](#bib-wingett2015hicup)).
+
+4. Fragment-based &lt;a name=cite-serra2017automatic&gt;&lt;/a&gt;([Serra, Baù, Goodstadt, Castillo, Filion, and Marti-Renom, 2017](#bib-serra2017automatic)).
+
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; HiC mapping strategy
+
+## Iterative mapping
+
+### FanC (`python`)
+
+`fanc.map.iterative_mapping(min_size=15, step_size=10)`
+
+* `min_size` determines the minimum size of a truncated read.
+* `step_size` determines the truncation amount.
+
+### TADbit (`python`)
+
+```python
+from pytadbit.mapping.full_mapper import full_mapping
+full_mapping(frag_map=False,windows=((1,25),(1,35),(1,45),(1,55),(1,65),(1,75)))
+```
+
+* `frag_map=False`: Disable fragment-based mapping.
+* By setting `frag_map=True` and `windows`, you can do combination of both mapping strategies.
+
+&gt; Iterative mapping has to be run twice, independently for each `FASTQ` file.
+
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; HiC mapping strategy
+
+### Fragment-based mapping Using `bowtie2`
+
+#### Mapping full-length reads first (independant mapping of `R1`/`R2`)
+
+```bash
+bowtie2 --un unmapped.fastq --end-to-end -x genome.fa -U read1.fastq | samtools view -bS - &gt; mapped.bam
+```
+
+#### reads spanning the ligation junction are trimmmed from their 3’ ....
+
+```bash
+cutsite_trimming --fastq unmapped.fastq --cutsite GATCGATC --out trimmed.fastq
+```
+
+                        R1                            R2
+        ***************&gt;                        &lt;************              
+       |--------|---------------------------------------------|
+            A                            B              
+
+                        R1                            R2
+        *******&gt;                                 &lt;************              
+       |--------|---------------------------------------------|
+            A                            B              
+#### ... And aligned back on the genome, then merged
+
+```bash
+bowtie2 --end-to-end -U trimmed.fastq | samtools view -bS - &gt; trimmed.bam
+samtools merge mapped.bam trimmed.bam
+```
+
+#### Tools using bowtie2
+
+* `hicup` (`pre-truncating`)
+* `HiC-Pro` (`fragment-based`)
+
+
+
+---
+
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; HiC mapping strategy
+
+### Split mapping Using `bwa`
+
+```bash
+bwa mem -5SPM genome.fa read1.fastq read2.fastq | samtools view -Shb - &gt; mapped.bam
+```
+
+from [Hi-C Processing Pipeline](https://data.4dnucleome.org/resources/data-analysis/hi_c-processing-pipeline):
+
+
+* The `-SP` option is used to ensure the results are equivalent to that obtained by running bwa mem on each mate separately, while retaining the right formatting for paired-end reads. 
+* The `-5` option is used to report the 5' portion of chimeric alignments as the primary alignment.
+* The `-M` option is used to annotate the secondary/supplementary clipped reads as secondary rather than supplementary, for compatibility with some public software tools such as picard MarkDuplicates.
+
+
+&gt; version 0.7.17 or higher is required for the -5 option for Hi-C data
+
+#### Tools using bwa:
+
+* `Juicer`.
+* `distiller` (previously `hiclib`).
+
+
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+### Many tools use custom scripts to convert aligned files (`bam`) into  pairs of interactions.
+
+#### One example (`Juicer`):
+
+```bash
+head merged_nodups.txt
+16 chr1 10617 0 16 chr1 114351057 294013 7 82M TACCACCGAAATCTGTGCAGAGGAGAACGCAGCTCCGCCCTCGCGGTGCTCTCCGGGTCTGTGCTGAGGAGAACGCAACTCC 60 82M GTGACAAGAAAAAAAAAGTCTGCACAAGTCCAGTACAGACAATGTTTTTTTGAAAATATTTTCAATCCCAGGTTGGCTGAAT NB501764:828:HTGLNBGXB:2:21307:2364:14969$/HiC/splits/HiC_rep1.fastq.gz$400960048 NB501764:828:HTGLNBGXB:2:21307:2364:14969$/HiC/splits/HiC_rep1.fastq.gz$400960049 
+0 chr1 13279 5 16 chr1 13512 7 11 82M CACCCGGCACCCTGTCCTGGACACGCTGTTGGCCTGGATCTGAGCCCTGGTGGAGGTCAAAGCCACCTTTGGTTCTGCCATT 6 82M TCACTGCCTTTTGTCTGCCCAGTTTCACCAGAAGTAGGCCTCTTCCTGACAGGCAGCTGCACCACTGCCTGGCGCTGTGCCC NB501764:828:HTGLNBGXB:3:12608:10576:14532$/HiC/splits/HiC_rep1.fastq.gz$570258508 NB501764:828:HTGLNBGXB:3:12608:10576:14532$/HiC/splits/HiC_rep1.fastq.gz$570258509 
+
+```
+
+#### HiC-pro use a similar format (`.validPairs`).
+
+### &lt;svg viewBox="0 0 576 512" style="position:relative;display:inline-block;top:.1em;fill:red;height:2em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"&gt;&lt;/path&gt;&lt;/svg&gt; &lt;span style="color:red"&gt;One custom method by tools = BAD.&lt;/span&gt;
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+
+### Solution : `pairtools`
+
+Process Hi-C pairs with `pairtools` [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1490831.svg)](https://doi.org/10.5281/zenodo.1490831)
+
+From [Documentation:](https://pairtools.readthedocs.io/en/latest/)
+
+`pairtools` aim to be an all-in-one tool for processing Hi-C pairs, and 
+can produce .pairs files compliant with the 
+[4DN standard](https://github.com/4dn-dcic/pairix/blob/master/pairs_format_specification.md). (Not so hard because they are the same guys).
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+### Aligned files (`bam`) to valid pairs of interactions with `pairtools`
+
+`pairtools` produce and operate on tab-separated files compliant with the
+[.pairs](https://github.com/4dn-dcic/pairix/blob/master/pairs_format_specification.md) 
+format defined by the [4D Nucleome Consortium](https://www.4dnucleome.org/). All
+pairtools properly manage file headers and keep track of the data
+processing history.
+
+
+&gt; &lt;svg viewBox="0 0 576 512" style="position:relative;display:inline-block;top:.1em;fill:red;height:3em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"&gt;&lt;/path&gt;&lt;/svg&gt; &lt;span style="color:red;font-size: 150%"&gt;Pairs format is a standard text format for pairs of ligation junctions (not binned).&lt;/span&gt;
+
+.center[
+&lt;div class="figure"&gt;
+&lt;img src="imgs/terminology.png" alt="https://pairtools.readthedocs.io/en/latest/parsing.html" width="60%" /&gt;
+&lt;p class="caption"&gt;https://pairtools.readthedocs.io/en/latest/parsing.html&lt;/p&gt;
+&lt;/div&gt;
+]
+
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+### Aligned files (`bam`) to valid pairs of interactions with `pairtools`
+
+`pairtools parse` detects ligation events in the aligned sequences of DNA molecules formed in Hi-C experiments and reports them in the .pairs/.pairsam format.
+
+### Example pairs file
+```
+## pairs format v1.0
+#sorted: chr1-chr2-pos1-pos2
+#shape: upper triangle
+#genome_assembly: hg38
+#chromsize: chr1 249250621
+#chromsize: chr2 243199373
+#chromsize: chr3 198022430
+...
+#columns: readID chr1 pos1 chr2 pos2 strand1 strand2
+EAS139:136:FC706VJ:2:2104:23462:197393 chr1 10000 chr1 20000 + +
+EAS139:136:FC706VJ:2:8762:23765:128766 chr1 50000 chr1 70000 + +
+EAS139:136:FC706VJ:2:2342:15343:9863 chr1 60000 chr2 10000 + +
+EAS139:136:FC706VJ:2:1286:25:275154 chr1 30000 chr3 40000 + -
+```
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+### `pairtools parse`: How it works
+&lt;br&gt;
+&lt;br&gt;
+### 1. when each side has only one unique alignment: `UU` as unique-unique.
+
+.center[
+&lt;div class="figure"&gt;
+&lt;img src="imgs/terminology.png" alt="https://pairtools.readthedocs.io/en/latest/parsing.html" width="70%" /&gt;
+&lt;p class="caption"&gt;https://pairtools.readthedocs.io/en/latest/parsing.html&lt;/p&gt;
+&lt;/div&gt;
+]
+
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+### `pairtools parse`: How it works
+&lt;br&gt;
+&lt;br&gt;
+### 2. Unmapped reads: `NU` (null-unique) or `NN` (null-null).
+
+.center[
+&lt;div class="figure"&gt;
+&lt;img src="imgs/read_pair_NU_NN.png" alt="https://pairtools.readthedocs.io/en/latest/parsing.html" width="70%" /&gt;
+&lt;p class="caption"&gt;https://pairtools.readthedocs.io/en/latest/parsing.html&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+### `pairtools parse`: How it works
+&lt;br&gt;
+&lt;br&gt;
+### 3. Multimapped reads: `MU` (multi-unique) or `MM` (multi-multi) or `NM` (null-multi).
+
+.center[
+&lt;div class="figure"&gt;
+&lt;img src="imgs/read_pair_MU_MM_NM.png" alt="https://pairtools.readthedocs.io/en/latest/parsing.html" width="70%" /&gt;
+&lt;p class="caption"&gt;https://pairtools.readthedocs.io/en/latest/parsing.html&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+### `pairtools parse`: How it works
+&lt;br&gt;
+&lt;br&gt;
+### 4. Multiple ligations (walks): `WW` (walk-walk).
+
+.center[
+&lt;div class="figure"&gt;
+&lt;img src="imgs/read_pair_WW.png" alt="https://pairtools.readthedocs.io/en/latest/parsing.html" width="70%" /&gt;
+&lt;p class="caption"&gt;https://pairtools.readthedocs.io/en/latest/parsing.html&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+### `pairtools parse`: How it works
+
+### Rescuing complex ligations
+
+.center[
+&lt;div class="figure"&gt;
+&lt;img src="imgs/rescue_modes.svg" alt="https://pairtools.readthedocs.io/en/latest/parsing.html" width="50%" /&gt;
+&lt;p class="caption"&gt;https://pairtools.readthedocs.io/en/latest/parsing.html&lt;/p&gt;
+&lt;/div&gt;
+]
+
+
+* `pairtools parse` detects such molecules and rescues them with `--walks-policy all`.
+* `--walks-policy=5unique` to report the 5’-most unique alignment on each side.
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+### `pairtools parse`: How it works
+&lt;br&gt;
+&lt;br&gt;
+### Rescuing single ligations
+
+Cases in which three alignments in read pairs are the result of one ligation event.
+
+.center[
+&lt;div class="figure"&gt;
+&lt;img src="imgs/read_pair_UR.png" alt="https://pairtools.readthedocs.io/en/latest/parsing.html" width="35%" /&gt;
+&lt;p class="caption"&gt;https://pairtools.readthedocs.io/en/latest/parsing.html&lt;/p&gt;
+&lt;/div&gt;
+]
+
+&gt; Single ligations are the "chimeric" reads on `Juicer`. 
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+###  `pairtools` is like `samtools` but for Hi-C data:
+
+- detect ligation junctions (a.k.a. Hi-C pairs) in aligned paired-end sequences of Hi-C DNA molecules
+  - __Main goal__ : pairs of `reads` into pairs of interactions.
+- sort .pairs files for downstream analyses.
+- detect, tag and remove PCR/optical duplicates.
+- generate extensive statistics of Hi-C datasets.
+- select Hi-C pairs given flexibly defined criteria `pairtools select '(pair_type=="UU") or (pair_type=="UR")'`:
+  - Only the reads with pairtools classification `UU`/`UR` can be retained and output to a pairs file.
+- restore `.sam` alignments from Hi-C pairs (`.pairsam`).
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+
+## Summary (`Juicer`)
+
+
+```bash
+Sequenced Read Pairs:  525,674,984
+*Normal Paired: 352,728,492 (67.10%)
+*Chimeric Paired: 96,761,172 (18.41%)
+ Collisions: 4,044,014 (0.77%)
+ Low MAPQ Collisions: 1,046,192 (0.20%)
+ Unmapped: 9,685,537 (1.84%)
+ MAPQ 0: 61,409,577 (11.68%)
+ Ligation Motif Present: 150,571,084 (28.64%)
+*Alignable (Normal+Chimeric Paired): 449,489,664 (85.51%)
+Unique Reads: 437,379,081 (83.20%)
+PCR Duplicates: 11,975,333 (2.28%)
+Optical Duplicates: 135,250 (0.03%)
+Library Complexity Estimate: 8,280,178,040
+Intra-fragment Reads: 17,552,902 (3.34% / 4.01%)
+Hi-C Contacts: 419,826,179 (79.86% / 95.99%)
+ Ligation Motif Present: 116,386,607  (22.14% / 26.61%)
+ 3' Bias (Long Range): 65% - 35%
+ Pair Type %(L-I-O-R): 25% - 25% - 25% - 25%
+Inter-chromosomal: 56,317,688  (10.71% / 12.88%)
+Intra-chromosomal: 363,508,491  (69.15% / 83.11%)
+Short Range (&lt;20Kb): 152,231,938  (28.96% / 34.81%)
+Long Range (&gt;20Kb): 211,275,579  (40.19% / 48.30%)
+
+```
+
+#### __Legube Team__: Every HiC data for now are mapped using this strategy 
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Post-mapping strategy
+
+## Summary (From Juicer output `.bam`)
+
+
+.pull-left[
+### `pairtools` (83.69%)
+
+
+```bash
+total	3785230
+total_unmapped	50411
+total_single_sided_mapped	566294
+total_mapped	3168525
+total_dups	0
+total_nodups	3168525
+cis	2739538
+trans	428987
+*pair_types/uU	32827
+pair_types/NR	8096
+pair_types/nn	6
+pair_types/Nu	410
+pair_types/MM	42986
+pair_types/mu	257
+pair_types/Nm	20
+*pair_types/UU	2845217
+*pair_types/Uu	32529
+pair_types/MR	115125
+pair_types/nm	15
+pair_types/MU	411166
+pair_types/Mu	31210
+*pair_types/RU	128632
+pair_types/mm	41
+*pair_types/UR	128658
+pair_types/mM	3463
+pair_types/nM	500
+*pair_types/uu	662
+pair_types/Mm	3380
+pair_types/nu	30
+```
+]
+
+
+.pull-right[
+### `Juicer` (85.86%)
+
+
+```bash
+Sequenced Read Pairs:  4,408,745
+*Normal Paired: 3,308,277 (75.04%)
+*Chimeric Paired: 476,953 (10.82%)
+ Collisions: 19,262 (0.44%)
+ Low MAPQ Collisions: 4,937 (0.11%)
+ Unmapped: 40,131 (0.91%)
+ MAPQ 0: 559,185 (12.68%)
+ Ligation Motif Present: 964,964 (21.89%)
+*Alignable (Normal+Chimeric Paired): 3,785,230 (85.86%)
+Unique Reads: 3,780,493 (85.75%)
+PCR Duplicates: 4,316 (0.10%)
+Optical Duplicates: 421 (0.01%)
+Library Complexity Estimate: 1,658,235,280
+Intra-fragment Reads: 143,455 (3.25% / 3.79%)
+Hi-C Contacts: 3,637,038 (82.50% / 96.21%)
+ Ligation Motif Present: 770,139  (17.47% / 20.37%)
+ 3' Bias (Long Range): 61% - 39%
+ Pair Type %(L-I-O-R): 25% - 25% - 25% - 25%
+Inter-chromosomal: 537,857  (12.20% / 14.23%)
+Intra-chromosomal: 3,099,181  (70.30% / 81.98%)
+Short Range (&lt;20Kb): 1,331,348  (30.20% / 35.22%)
+Long Range (&gt;20Kb): 1,767,820  (40.10% / 46.76%)
+```
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #f39c12;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Matrix aggregation ([source](https://data.4dnucleome.org/resources/data-analysis/hi_c-processing-pipeline))
+
+.center[
+&lt;img src="imgs/pair_to_cool.svg" width="65%" /&gt;
+#### &lt;a name=cite-abdennur2020cooler&gt;&lt;/a&gt;([Abdennur and Mirny, 2020](#bib-abdennur2020cooler))
+]
+
+
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Matrix aggregation ([source](https://data.4dnucleome.org/resources/data-analysis/hi_c-processing-pipeline))
+
+
+### `.hic` format
+
+* A `.hic` file is produced by Juicertools (version `1.8.9-cuda8`) and can be visualized using Juicebox
+* The matrix is normalized using the `VC`, `VC_SQRT`, `KR` methods, after filtering out intra-fragment contacts (contacts that fall in the same restriction fragment).
+
+### `.mcool` format
+
+* An `.mcool` file is produced by Cooler (version `0.8.3`) and can be visualized using HiGlass.
+* The matrix is normalized using the `ICE` (iterative correction and eigenvalue decomposition) matrix balancing algorithm, after the matrix-level removal of the diagonal and the rows/columns with a low value.
+* The `.mcool` file also contains the normalization vectors generated by Juicertools (same as in a .hic file generated from the same pairs file)
+
+*  `.cool` format is very well [documented](https://cooler.readthedocs.io/en/latest/index.html).
+
+### &lt;svg viewBox="0 0 576 512" style="position:relative;display:inline-block;top:.1em;fill:red;height:2em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"&gt;&lt;/path&gt;&lt;/svg&gt; &lt;span style="color:red"&gt;You want theses files to visualise HiC on Genome Browser.&lt;/span&gt;
+
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Matrix aggregation
+
+### `.hic` format
+
+`.hic` are generated with `juicertools pre` command and accept different formats :
+
+1. `Short`: `&lt;str1&gt; &lt;chr1&gt; &lt;pos1&gt; &lt;frag1&gt; &lt;str2&gt; &lt;chr2&gt; &lt;pos2&gt; &lt;frag2&gt;`
+2. `Medium`: `&lt;readname&gt; &lt;str1&gt; &lt;chr1&gt; &lt;pos1&gt; &lt;frag1&gt; &lt;str2&gt; &lt;chr2&gt; &lt;pos2&gt; &lt;frag2&gt; &lt;mapq1&gt; &lt;mapq2&gt;`
+3. `Long` (`Juicer` output): `&lt;str1&gt; &lt;chr1&gt; &lt;pos1&gt; &lt;frag1&gt; &lt;str2&gt; &lt;chr2&gt; &lt;pos2&gt; &lt;frag2&gt; &lt;mapq1&gt; &lt;cigar1&gt; &lt;sequence1&gt; &lt;mapq2&gt; &lt;cigar2&gt; &lt;sequence2&gt; &lt;readname1&gt; &lt;readname2&gt;`
+4. `4DN DCIC format` (`.pair` output): `readID chr1 position1 chr2 position2 strand1 strand2`
+
+```bash
+java -Xmx48000m  -Djava.awt.headless=true -jar juicertools.jar pre --threads 12 mapped.pairs contact_map.hic chrom.sizes
+```
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Matrix aggregation
+
+### `.cool`/`.mcool` format
+
+### Work with `Pairix`
+
+[Pairix](https://github.com/4dn-dcic/pairix) is a tool for indexing and querying on a block-compressed text file containing pairs of genomic coordinates.
+
+
+### Genereting single resolution contact map file (`.cool`)
+
+```bash
+bgzip mapped.pairs
+
+pairix mapped.pairs.gz
+
+cooler cload pairix -p 12 chrom.sizes:1000 mapped.pairs.gz contact_map_1kb.cool
+
+```
+
+### Genereting multi-resolutions contact map file (`.mcool`)
+
+```bash
+cooler zoomify --balance -p 12 contact_map_1kb.cool
+```
+
+* `--balance` will apply balancing (normalization) to each zoom level.
+*  `cooler` can also work with pre-binned contact matrix (`cooler load`).
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Matrix aggregation
+
+### Hi-C matrix conversion with `hicConvertFormat` from `HiCExplorer` ([source](https://hicexplorer.readthedocs.io/en/latest/content/tools/hicConvertFormat.html))
+
+#### `.hic` to `.cool`
+
+```bash
+hicConvertFormat -m contact_map.hic --inputFormat hic --outputFormat cool -o contact_map_10kb.cool --resolutions 10000
+```
+
+#### `.hicpro` to `.cool`
+
+```bash
+hicConvertFormat -m matrix.hicpro --bedFileHicpro hicpro.bed --inputFormat hicpro --outputFormat cool -o matrix.cool
+```
+
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Full Hi-C pipeline
+
+### `bowtie2` (fragment-based)
+
+.center[
+&lt;img src="imgs/dag_bwt.svg" width="55%" /&gt;
+]
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Full Hi-C pipeline
+
+### `bwa` (split mapping)
+
+.center[
+&lt;img src="imgs/dag_bwa.svg" width="45%" /&gt;
+]
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Variations of Hi-C methods
+
+* Micro-C/DNase Hi-C
+  * Using either MNase or DNase instead of restriction enzymes.
+* Capture Hi-C (promoter/custom).
+* HiChIP (Hi-C + ChIP-seq).
+* 4C-seq (One _locus_ against all).
+
+### Some Hi-C pipelines works with Hi-C variations
+
+* `distiller` works just fine.
+* Some other tools aren't as good : 
+  * `HiC-pro` can work without restriction enzyme with `LIGATION_SITE` `GENOME_FRAGMENT` unseted.
+  * `Juicer` want a restriction enzyme file to work (need to be tested).
+
+
+### Specific tools
+
+* Capture Hi-C:
+  * [`CHiCAGO`](https://bioconductor.org/packages/release/bioc/html/Chicago.html).
+* HiChIP:
+  * [HiChIP pipeline by Dovetail Genomics](https://hichip.readthedocs.io/en/latest/).
+  * [`FitHiChIP`](https://github.com/ay-lab/FitHiChIP).
+* 4C-seq:
+  * [peakC](https://github.com/deWitLab/peakC).
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Special features of Hi-C data
+
+
+### __Hi-C normalization__: Sequence-dependant features introduce biais in Hi-C data
+
+1. Explicit correction.
+2. Implicit correction.
+3. Joint normalization.
+
+### __Observed/Expected__: Remove Expected to remove Polymer distance effect
+
+&gt; The strongest signal in a typical Hi-C map is the decay of contact frequency with genomic separation (also referred to as genomic distance). In the Hi-C field, this decay is often interchangeably referred to as the:
+
+&gt;* expected because one "expects" a certain average contact frequency at a given genomic separation.
+&gt;* scaling which is borrowed from the polymer physics literature.
+&gt;* `\(P(s)\)` curve contact probability, `\(P\)`, as a function of genomic separation, `\(s\)`.
+&gt;
+&gt; __Source__: https://cooltools.readthedocs.io/en/latest/notebooks/contacts_vs_distance.html
+
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #f39c12;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Hi-C Matrix normalization ([Source](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0745-7))
+
+### Explicit correction
+
+Correction using _a priori_ knowledge of the factors that may cause bias in Hi-C data:
+
+* Known bias : GC content, mapability, fragment length.
+* (Some) Tools using Explicit correction: 
+  * [`HiCorr`](https://github.com/JinLabBioinfo/HiCorr) (`Perl`/`Python`/`Shell`).
+  * [`HiCNorm`](https://github.com/ren-lab/HiCNorm) (`R`).
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #f39c12;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Hi-C Matrix normalization ([Source](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0745-7))
+
+
+### Matrix balancing
+
+* Matrix balancing assume equal visibility for all _loci_ (`==rowsum`).
+* This method is based on the assumption that each locus should have the same probability of interaction genome-wide.
+* Should correct for any bias in the contact maps.
+* Many methods: `VC`,`ICE`,`KR`.
+* (Some) Tools using Matrix balancing:
+  * `Juicer` (`KR`,`VC`).
+  * `Cooler` (`ICE`).
+  * `HiC-Pro` (`ICE`).
+
+&gt; Issues with cancer data. See [LOIC/CAIC](https://github.com/nservant/cancer-hic-norm) normalization.
+  
+&gt; Matrix balancing is the most common normalization since  `Juicer`, `Cooler` and `HiC-Pro` use it.
+  
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #f39c12;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Hi-C Matrix normalization ([Source](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0745-7))
+
+### Joint correction
+
+Joint correction allows for visualizing the differences between interacting chromatin regions in two Hi-C datasets while explicitly accounting for the linear distance between interacting regions.
+
+* Used to compare multiples Hi-C dataset
+* (Some) Tools using Joint correction:
+  * [`multiHiCcompare`](https://bioconductor.org/packages/release/bioc/html/multiHiCcompare.html)/[`HiCcompare`](https://bioconductor.org/packages/release/bioc/html/HiCcompare.html).
+  
+&gt; Hypothesis: Distance effect is not affected by the experiment.
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #f39c12;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt;Hi-C  Matrix normalization
+
+
+.center[
+&lt;img src="imgs/HiCImage_observed_none_vs_balanced.svg" width="70%" /&gt;
+
+#### __Observed (raw)__ HiC data (_left_) vs __Observed (Matrix balancing)__ HiC data (_right_).
+
+]
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #f39c12;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Hi-C Matrix transformation
+
+.center[
+&lt;img src="imgs/HiCImage_observed_vs_expected.svg" width="70%" /&gt;
+
+#### __Observed__ HiC data (_left_) vs __Expected__ HiC data (_right_).
+
+
+]
+
+* `Expected`: decay of contact frequency with genomic separation.
+* (Some) tools to compute `Expected` matrix:
+  * `juicertool dump`: `juicer_tools.jar dump expected`.
+  * [HiTC](https://bioconductor.org/packages/release/bioc/html/HiTC.html) (`R` packages).
+  * `expected_cis` from `cooltools`.
+  * `expected_values()` from `FAN-C`
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #f39c12;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Hi-C Matrix transformation
+
+.center[
+&lt;img src="imgs/HiCImage_observed_vs_OE.svg" width="90%" /&gt;
+
+#### __Observed__ HiC data (_left_) vs __Observed/Expected__ HiC data (_right_).
+]
+
+* `Observed/Expected`: Remove genomic distance effect.
+* Can be obtained by `juicertool dump`: `juicer_tools.jar dump OE`
+
+&gt; An expected level of interactions between disjoint chromosomes is calculated as a simple average, as there is no notion of genomic separation for a pair of chromosomes and contact matrix for these regions looks "flat".
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #f39c12;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Work with Hi-C data
+
+
+.center[
+&lt;img src="imgs/matrix_to_vizu.svg" width="100%" /&gt;
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Visualization
+
+### [Juicebox](http://www.aidenlab.org/juicebox/)
+
+.center[
+&lt;img src="imgs/juicebox.png" width="35%" /&gt;
+]
+
+* Desktop version : https://github.com/aidenlab/Juicebox/wiki/Download (Java)
+* Web version : http://www.aidenlab.org/juicebox/
+
+* .green[__Pros__]: 
+  * Very convenient to use.
+  * Work with plenty of formats (`bigwig`,`bed`).
+  * Many normalizations/transformations available for HiC data (Balanced/Expected/Pearson correlation).
+* .red[__Cons__]:
+  * Work only with `.hic` format.
+
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Visualization
+
+
+### [HiGlass](https://higlass.io/)
+
+.center[
+&lt;img src="imgs/HiGlass.svg" width="30%" /&gt;
+]
+
+* .green[__Pros__]: 
+  * Very beautiful and many features are available.
+  * Python API (and jupyter) + JavaScript API.
+* .red[__Cons__]:
+  * Web version only (local or on server).
+  * Work only with `.mcool`/`.cool` formats.
+  * Need file formatting and command line (database ingestion) to be used on the browser.
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #f39c12;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Visualization
+
+### Genome Browser:
+
+* [IGV](https://software.broadinstitute.org/software/igv/) (Linear).
+* [UCSC genome browser](https://genome.ucsc.edu/) (Linear).
+
+### Command line (or R/python API):
+
+* [cooltools](https://github.com/open2c/cooltools) (`python`).
+* [FanC](https://github.com/vaquerizaslab/fanc) (`python`).
+* [HiCExplorer](https://github.com/deeptools/HiCExplorer) (from deeptools, `python`).
+* [TADbit](https://3dgenomes.github.io/TADbit/index.html) (`python`).
+* [GENOVA](https://github.com/dewitlab/GENOVA) (`R`).
+* `R` Classes for genomic interaction data.
+  * [HiTC](https://bioconductor.org/packages/release/bioc/html/HiTC.html)
+  * [InteractionSet](https://bioconductor.org/packages/release/bioc/html/InteractionSet.html).
+  
+
+* More on HiC visualization : https://github.com/mdozmorov/HiC_tools#visualization
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Work with Hi-C data
+
+### __Matrix dumping__ (Text export)
+
+* export Hi-C interaction into human-readable data-table.
+* load and manipulate Hi-C data with "classic" data-analysis and manipulation tools (`pandas`,`numpy`,`tidyverse`,`Matrix`,...).
+
+--
+
+.pull-left[
+### Juicer-pre/straw 
+
+```bash
+straw NONE inter.hic chr1 chr1 BP 100000 | head
+
+100000	100000	26 
+0	200000	1
+100000	200000	10
+200000	200000	125
+200000	500000	5
+500000	500000	43
+100000	600000	1
+500000	600000	1
+600000	600000	15
+600000	700000	26
+
+```
+]
+
+.pull-right[
+
+### cooler
+
+```bash
+cooler dump -t pixels --header --join data/test.cool | head
+
+chrom1	start1	end1	chrom2	start2	end2	count
+1	0	1000000	1	0	1000000	3
+1	0	1000000	1	1000000	2000000	4
+1	0	1000000	1	43000000	44000000	1
+1	0	1000000	1	155000000	156000000	1
+1	0	1000000	1	229000000	230000000	1
+1	0	1000000	2	187000000	188000000	1
+1	0	1000000	2	242000000	243000000	1
+1	0	1000000	2	243000000	243199373	1
+1	0	1000000	3	172000000	173000000	1
+```
+
+]
+
+&gt; No need to dump `HiC-Pro` output because it already has triplet sparse format : `bin_i / bin_j / counts_ij`
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Work with Hi-C data with `R`
+
+### Use an [`HiTC::HTCexp`](https://bioconductor.org/packages/release/bioc/html/HiTC.html) to manipulate genomic Hi-C data in `R`
+
+
+#### Load data
+
+.pull-left[
+
+```r
+binSize &lt;- 100000
+STRAWi &lt;- glue::glue("../HiC_group_meeting_files/straw_NONE_DIvA_manipA_chr1_chr1_{binSize/1e3}kb.txt.gz")
+datai &lt;- glue::glue("zcat {STRAWi}") %&gt;% 
+  data.table::fread(sep='\t',header=F) %&gt;% 
+  as.matrix()
+datai %&gt;% head
+```
+]
+
+.pull-right[
+
+
+```
+##          V1     V2  V3
+## [1,]      0      0   2
+## [2,]      0 100000   2
+## [3,] 100000 100000  20
+## [4,]      0 200000   3
+## [5,] 100000 200000   9
+## [6,] 200000 200000 112
+```
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Work with Hi-C data with `R`
+
+### Use an [`HiTC::HTCexp`](https://bioconductor.org/packages/release/bioc/html/HiTC.html) to manipulate genomic Hi-C data in `R`
+
+
+
+
+#### Create square sparse matrix
+
+
+
+```r
+chrendi&lt;-seqlengths(seqinfo(BSgenome.Hsapiens.UCSC.hg19::BSgenome.Hsapiens.UCSC.hg19)["chr1"])
+binendi&lt;-ceiling(chrendi/binSize)
+```
+
+
+
+```r
+data.Mati&lt;-sparseMatrix(i=(datai[,1]/binSize)+1,j=(datai[,2]/binSize)+1,x=datai[,3])
+data.MatSymi&lt;-data.Mati+t(data.Mati)
+diag(data.MatSymi)&lt;-diag(data.MatSymi)/2
+rm(data.Mati,datai)
+```
+
+--
+
+#### Create Genomic ranges (`GRanges`) for indices
+
+
+```r
+starti&lt;-seq(1,chrendi,by=binSize)
+endi&lt;-c(seq(binSize,chrendi,by=binSize),chrendi)
+chri.GR&lt;-GRanges("chr1",IRanges(starti,endi))
+names(chri.GR)&lt;-paste0("bin",1:length(chri.GR))
+```
+
+--
+
+#### Create the `HTCexp` object
+
+
+.pull-left[
+
+```r
+HTC&lt;-HiTC::HTCexp(data.MatSymi,chri.GR,chri.GR)
+HTC
+```
+]
+
+.pull-right[
+
+
+```
+## HTCexp object
+## Focus on genomic region [chr1:1-249250621]
+## Matrix of Interaction data: [2493-2493]
+```
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Work with Hi-C data with `R`
+
+### Use an [`HiTC::HTCexp`](https://bioconductor.org/packages/release/bioc/html/HiTC.html) to manipulate genomic Hi-C data in `R`
+
+#### Extract a sub-region (sub-matrix)
+
+
+```r
+HiTC::extractRegion(HTC, c(1,2), "chr1", from=1, to=1000000) %&gt;%
+  HiTC::intdata()
+```
+
+```
+## 10 x 10 sparse Matrix of class "dgCMatrix"
+##                                        
+## bin1  2  2   3 . .  .  .    .    .    .
+## bin2  2 20   9 . .  .  1    .    .    .
+## bin3  3  9 112 . .  2  2    .    .    .
+## bin4  .  .   . . .  .  .    .    .    .
+## bin5  .  .   . . .  1  .    .    .    .
+## bin6  .  .   2 . 1 25  .    .    .    .
+## bin7  .  1   2 . .  . 11   29   13    6
+## bin8  .  .   . . .  . 29 1934  481  163
+## bin9  .  .   . . .  . 13  481 4761 1043
+## bin10 .  .   . . .  .  6  163 1043 5650
+```
+
+--
+
+#### Matrix balancing normalization
+
+```r
+HTCnorm &lt;- HiTC::normICE(HTC, max_iter=10)
+```
+
+#### Get Observed/Expected values
+
+```r
+HTCnorm &lt;- HiTC::normPerExpected(HTCnorm, method="loess")
+```
+
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Work with Hi-C data with `R`
+
+### Use an [`InteractionSet`](https://bioconductor.org/packages/release/bioc/html/InteractionSet.html) to manipulate genomic Hi-C data in `R`
+
+
+#### Extract chromosome informations
+
+
+
+```r
+#Genomic informations
+Chr.V &lt;- "chr1"
+binSize &lt;- 100000
+# Get the chrom size
+SeqInfo=seqinfo(BSgenome.Hsapiens.UCSC.hg19::BSgenome.Hsapiens.UCSC.hg19)
+# Build the bins of all genome
+my.ranges &lt;- tileGenome(SeqInfo[Chr.V],tilewidth=binSize, cut.last.tile.in.chrom=TRUE) %&gt;%
+  sortSeqlevels() %&gt;% sort()
+my.ranges &lt;- my.ranges %&gt;% plyranges::mutate(idx = 1:length(my.ranges))
+indices_ranges &lt;- my.ranges %&gt;% as_tibble() %&gt;% dplyr::select(seqnames,start,idx)
+```
+
+
+#### Load data
+
+.pull-left[
+
+```r
+one_chr_res &lt;- list.files("../HiC_group_meeting_files/",pattern=glue::glue("{Chr.V}_{binSize/1e3}kb"),full.names = T) %&gt;% str_subset("manipA")
+one_chr_res
+
+res_hic &lt;- lapply(one_chr_res,function(x){
+  as_tibble(data.table::fread(cmd=glue::glue("zcat {x}"),sep='\t',header=F)) %&gt;% set_names(c("bin1","bin2","value"))
+  
+}) %&gt;% setNames( str_extract(one_chr_res,"DIvA|OHT"))  %&gt;% bind_rows(.id="cond") 
+
+res_hic &lt;- res_hic %&gt;% pivot_wider(names_from = cond, values_from = value)
+
+names_cond &lt;- res_hic %&gt;% dplyr::select(-1:-2) %&gt;% colnames()
+names_cond &lt;- rep(0,length(names_cond)) %&gt;% setNames(names_cond)%&gt;% as.list()
+
+res_hic &lt;- res_hic %&gt;% replace_na(names_cond)
+```
+
+
+
+
+]
+
+.pull-right[
+
+```
+## [1] "../HiC_group_meeting_files//straw_NONE_DIvA_manipA_chr1_chr1_100kb.txt.gz"
+## [2] "../HiC_group_meeting_files//straw_NONE_OHT_manipA_chr1_chr1_100kb.txt.gz"
+```
+&lt;table class="table table-striped" style="font-size: 10px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; bin1 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; bin2 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; DIvA &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; OHT &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0e+00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0e+00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0e+00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1e+05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1e+05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1e+05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 32 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0e+00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2e+05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1e+05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2e+05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 13 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2e+05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2e+05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 112 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 105 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Work with Hi-C data with `R`
+
+### Use an [`InteractionSet`](https://bioconductor.org/packages/release/bioc/html/InteractionSet.html) to manipulate genomic Hi-C data in `R`
+
+
+#### Create `InteractionSet` object
+
+
+```r
+library(InteractionSet)
+gi &lt;- GInteractions((res_hic$bin1/binSize)+1, (res_hic$bin2/binSize)+1,my.ranges)
+
+iset &lt;- InteractionSet(as.matrix(dplyr::select(res_hic,c(-1,-2))), gi)
+total_reads &lt;- colSums(assay(iset))
+
+iset$totals &lt;- total_reads
+```
+
+.pull-left[
+
+```r
+gi
+```
+
+```
+## GInteractions object with 1606446 interactions and 0 metadata columns:
+##             seqnames1             ranges1     seqnames2             ranges2
+##                 &lt;Rle&gt;           &lt;IRanges&gt;         &lt;Rle&gt;           &lt;IRanges&gt;
+##         [1]      chr1            1-100000 ---      chr1            1-100000
+##         [2]      chr1            1-100000 ---      chr1       100001-200000
+##         [3]      chr1       100001-200000 ---      chr1       100001-200000
+##         [4]      chr1            1-100000 ---      chr1       200001-300000
+##         [5]      chr1       100001-200000 ---      chr1       200001-300000
+##         ...       ...                 ... ...       ...                 ...
+##   [1606442]      chr1 238300001-238400000 ---      chr1 249200001-249250621
+##   [1606443]      chr1 238800001-238900000 ---      chr1 249200001-249250621
+##   [1606444]      chr1 239300001-239400000 ---      chr1 249200001-249250621
+##   [1606445]      chr1 243300001-243400000 ---      chr1 249200001-249250621
+##   [1606446]      chr1 245500001-245600000 ---      chr1 249200001-249250621
+##   -------
+##   regions: 2493 ranges and 1 metadata column
+##   seqinfo: 1 sequence from hg19 genome
+```
+
+]
+
+.pull-right[
+
+```r
+iset
+```
+
+```
+## class: InteractionSet 
+## dim: 1606446 2 
+## metadata(0):
+## assays(1): ''
+## rownames: NULL
+## rowData names(0):
+## colnames(2): DIvA OHT
+## colData names(1): totals
+## type: GInteractions
+## regions: 2493
+```
+
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Work with Hi-C data with `R`
+
+### Use an [`InteractionSet`](https://bioconductor.org/packages/release/bioc/html/InteractionSet.html) to manipulate genomic Hi-C data in `R`
+
+
+
+#### Extract a sub-region (sub-matrix)
+
+
+.pull-left[
+
+```r
+my_region &lt;- GRanges("chr1:1-1000000")
+out &lt;- linkOverlaps(iset, my_region) # extract bin corresponding to filters 
+out
+```
+
+```
+## DataFrame with 22 rows and 3 columns
+##         query  subject1  subject2
+##     &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;
+## 1           1         1         1
+## 2           2         1         1
+## 3           3         1         1
+## 4           4         1         1
+## 5           5         1         1
+## ...       ...       ...       ...
+## 18         18         1         1
+## 19         19         1         1
+## 20         20         1         1
+## 21         21         1         1
+## 22    1277418         1         1
+```
+]
+.pull-right[
+
+```r
+sub_iset &lt;- iset[out$query]
+sub_iset
+```
+
+```
+## class: InteractionSet 
+## dim: 22 2 
+## metadata(0):
+## assays(1): ''
+## rownames: NULL
+## rowData names(0):
+## colnames(2): DIvA OHT
+## colData names(1): totals
+## type: GInteractions
+## regions: 2493
+```
+]
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Work with Hi-C data with `Python`
+
+* Generate `.mcool` and load it on python with `cooler`.
+* Manipulate matrices with `numpy`.
+* Compute HiC tools with `cooltools`.
+* Visualization with `matplotlib` (Static) or `HiGlass` (interactive).
+
+.pull-left[
+
+### Code
+
+
+```python
+import numpy as np
+import pandas as pd
+import cooler
+### to load a cooler with a specific resolution use the following syntax:
+clr = cooler.Cooler('../HiC_group_meeting_files/test.mcool::resolutions/1000000')
+
+
+clr.matrix(balance=False)[:]
+```
+]
+.pull-right[
+
+### Output
+
+
+```
+## array([[1169236,   94780,   21339, ...,      47,      46,      11],
+##        [  94780, 1644923,   52554, ...,      78,      57,      20],
+##        [  21339,   52554, 1097419, ...,      24,      42,       9],
+##        ...,
+##        [     47,      78,      24, ..., 2030235,   53138,    3598],
+##        [     46,      57,      42, ...,   53138, 1894086,   44189],
+##        [     11,      20,       9, ...,    3598,   44189,  428149]],
+##       dtype=int32)
+```
+]
+
+```python
+clr.matrix(balance=False).fetch(( "chr1",1,1000000))
+```
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Summary
+
+### Hi-C processing
+
+* Hi-C pipelines: `Juicer`, `distiller`, `HiC-pro`.
+* Hi-C pairs manipulation with `pairtools`.
+* Hi-C matrix aggregation with `.hic` and `.cool` format.
+
+### Post-processsing
+
+* Matrix normalization (Matrix balancing, Explicit correction).
+* Consider/Remove the genomic distance effect with `Observed/Expected`.
+
+### Visualization
+
+* 3D Genome browser (`JuiceBox`,`HiGlass`).
+* API/Command line visualization/plotting tools (`cooltools`,`HiCExplorer`,...).
+
+### Hi-C Data manipulation
+
+* Matrix dumping (`straw`,`juicer pre`,`cooler`).
+* Data-analysis and manipulation tools (`pandas`,`numpy`,`tidyverse`,`Matrix`,...).
+
+&gt; Look at https://github.com/mdozmorov/HiC_tools for a complete Hi-C data analysis tools and papers.
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; 3D conformation analysis with Hi-C data
+
+.center[
+&lt;img src="imgs/HiC_landscape.svg" width="80%" /&gt;
+]
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; 3D conformation analysis with Hi-C data
+
+### Inter-chromosomal interactions
+
+.center[
+&lt;img src="imgs/HiC_chrom_terr.svg" width="100%" /&gt;
+#### &lt;a name=cite-lieberman2009comprehensive&gt;&lt;/a&gt;([Lieberman-Aiden, Van Berkum, Williams, Imakaev, Ragoczy, Telling, Amit, Lajoie, Sabo, Dorschner, and others, 2009](#bib-lieberman2009comprehensive))
+]
+
+
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #f39c12;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Contacts vs distance
+
+
+&gt; The strongest signal in a typical Hi-C map is the decay of contact frequency with genomic separation (also referred to as genomic distance).
+&gt;
+&gt; __Source__: https://cooltools.readthedocs.io/en/latest/notebooks/contacts_vs_distance.html
+
+.center[
+&lt;img src="imgs/count_vs_distance_mitotic.svg" width="100%" /&gt;
+#### &lt;a name=cite-naumova2013organization&gt;&lt;/a&gt;([Naumova, Imakaev, Fudenberg, Zhan, Lajoie, Mirny, and Dekker, 2013](#bib-naumova2013organization))
+]
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #f39c12;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Contacts vs distance
+
+### `HiCExplorer`
+
+
+```bash
+hicPlotDistVsCounts -m HiC_Legube_DIvA_rep1_with_1kb_0kb.mcool::/resolutions/100000 HiC_Legube_OHT_rep1_with_1kb_0kb.mcool::/resolutions/100000 -o counts_vs_dist.pdf --labels 'DIVA' 'OHT' --maxdepth 20000000 --plotsize 5 4.2
+```
+
+.center[
+&lt;img src="imgs/counts_vs_dist_50_bins_merged.svg" width="45%" /&gt;
+]
+
+* `--outFileData`: The data underlyong the plots is saved on this file.
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Genomic compartment (A/B)
+
+__Plaid pattern__: These plaid patterns reflect tendencies of chromosome regions to make more frequent contacts with regions of the same type: active regions have increased contact frequency with other active regions, and intactive regions tend to contact other inactive regions more frequently. ([Source](https://cooltools.readthedocs.io/en/latest/notebooks/compartments_and_saddles.html))
+
+.center[
+&lt;img src="imgs/HiCImage_observed_vs_OE_vs_Pearson.svg" width="90%" /&gt;
+]
+
+* __Pearson correlation__ from __O/E__ matrix allow to see compartmentalization.
+* __A__: Active (genes) chromatine associated with _euchromatin_ marks.
+* __B__: Inactive chromatine associated with _heterochromatin_ marks.
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Genomic compartment (A/B)
+
+### __Eigendecomposition__ of Hi-C matrix to obtain compartment profiles: 
+
+.center[
+&lt;img src="imgs/eigenAB.svg" width="60%" /&gt;
+]
+
+
+* Done by extracting first component of a __PCA__ on O/E Hi-C matrix.
+* Compartment profiles from tools:
+  * `eigs_cis` from `cooltools`.
+  * `hicPCA` from `HiCExplorer`.
+  * `eigenvector` from `juicertools`.
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Genomic compartment (A/B)
+
+### Sub-compartments
+
+.center[
+&lt;img src="imgs/sub_compartment.svg" width="60%" /&gt;
+#### ([Rao, Huntley, Durand, et al., 2014](#bib-rao20143d))
+]
+
+
+Alternatives to __Eigendecomposition__ with sub-compartment detection:
+
+* [`CALDER`](https://github.com/CSOgroup/CALDER) (Hierarchical clustering with contact similarities).
+  * Nested compartment can be associated with TADs.
+* [`SNIPER`](https://github.com/ma-compbio/SNIPER) (Neural-network autoencoder).
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Studying compartmentalization strenght variation
+
+### Saddle-plots
+
+* Stratify genomic regions using `PC1` into percentiles of similar values.
+* Averaging (cis) interactions between groups from `O/E` values.
+
+.center[
+&lt;img src="imgs/notebooks_compartments_and_saddles_28_1.png" width="35%" /&gt;
+#### `saddleplot` function from `cooltools`
+]
+
+* `cooltools` with `saddle`.
+* `FAN-C` with `fanc compartments`.
+* By hand with `R`.
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Topologically Associating Domains (TAD)
+
+.center[
+&lt;img src="imgs/loop_tad_ctcf_ko1.svg" width="80%" /&gt;
+#### &lt;a name=cite-chang2020tads&gt;&lt;/a&gt;([Chang, Ghosh, and Noordermeer, 2020](#bib-chang2020tads))
+]
+
+* TAD are composed of highly self-interacting _loci_:
+  * _loci_ inside a TAD interact with each other more frequently than _loci_ outside.
+* TAD form 100kb~1mb interacting domains along the diagonal.
+* Separated by insulated regions (CTCF binding site).
+
+---
+
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Topologically Associating Domains (TADs)
+
+### TAD boundaries measurement on Hi-C data
+
+__TAD boundaries__ can be measured by a TAD-separation score:
+* Look at cis interactions (left/right) for a bin using a running window of different sizes.
+* Different metrics can be used:
+  * directionality index (_DI_) &lt;a name=cite-dixon2012topological&gt;&lt;/a&gt;([Dixon, Selvaraj, Yue, Kim, Li, Shen, Hu, Liu, and Ren, 2012](#bib-dixon2012topological)).
+  * insulation score &lt;a name=cite-crane2015condensin&gt;&lt;/a&gt;([Crane, Bian, McCord, Lajoie, Wheeler, Ralston, Uzawa, Dekker, and Meyer, 2015](#bib-crane2015condensin)).
+    
+--
+
+.center[
+&lt;img src="imgs/insulation_score_computation.png" width="40%" /&gt;
+
+]
+
+---
+
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Topologically Associating Domains (TADs)
+
+### TAD boundaries measurement on Hi-C data
+
+__TAD boundaries__ can be measured by a TAD-separation score:
+* Look at cis interactions (left/right) for a bin using a running window of different sizes.
+* Different metrics can be used:
+  * directionality index (_DI_) ([Dixon, Selvaraj, Yue, et al., 2012](#bib-dixon2012topological)).
+  * insulation score ([Crane, Bian, McCord, et al., 2015](#bib-crane2015condensin)).
+    
+
+
+.center[
+&lt;img src="imgs/HiC_view_insulation.svg" width="80%" /&gt;
+
+]
+
+---
+
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Topologically Associating Domains (TADs)
+
+### TAD detection (TAD calling)
+
+TAD callers:
+
+* [TopDom](https://github.com/HenrikBengtsson/TopDom) (own score like _DI_).
+* [TADtool](https://github.com/vaquerizaslab/tadtool) (_DI_ and insulation).
+* [HiCExplorer](https://github.com/deeptools/HiCExplorer) (insulation).
+* [cooltools](https://github.com/open2c/cooltools) (insulation).
+* [TADreg](https://github.com/raphaelmourad/TADreg) (Beta from regression).
+* [`Arrowhead`](https://github.com/aidenlab/juicer/wiki/Arrowhead) matrix transformation (`juicer`) .
+
+--
+
+.center[
+&lt;img src="imgs/tad_method_comparison.svg" width="55%" /&gt;
+
+]
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; _Loop extrusion_ model
+
+.center[
+&lt;div class="figure"&gt;
+&lt;img src="imgs/loop_model_leonid_1bis.svg" alt="Mirny, L. A. (2021). Cells use loop extrusion to weave and tie the genome." width="100%" /&gt;
+&lt;p class="caption"&gt;Mirny, L. A. (2021). Cells use loop extrusion to weave and tie the genome.&lt;/p&gt;
+&lt;/div&gt;
+]
+
+* _Loop extrusion_ promote contact between sequence that control gene expression (__enhancers__ &amp; __promoters__).
+* When a motor reels in a section of DNA that is bound to a CTCF protein, it stalls.
+* The other motor can continue reeling, allowing the DNA to be scanned for regulatory sequences.
+
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#27ae60;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; _Loop extrusion_ model
+
+.center[
+&lt;div class="figure"&gt;
+&lt;img src="imgs/stripes.svg" alt="(Iain F. Davidson &amp;amp; Jan-Michael Peters, Nat Rev Mol Cell Biol (2021))." width="80%" /&gt;
+&lt;p class="caption"&gt;(Iain F. Davidson &amp; Jan-Michael Peters, Nat Rev Mol Cell Biol (2021)).&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill:#e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Loop calling
+
+.center[
+&lt;img src="imgs/loop_call.svg" width="80%" /&gt;
+#### ([Rao, Huntley, Durand, et al., 2014](#bib-rao20143d))
+]
+
+* Implemented in [`HiCCUPs`](https://github.com/aidenlab/juicer/wiki/HiCCUPS).
+* Other implementations are available: `cooltools.api.dotfinder`, `hicDetectLoops`.
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Aggregate analyses (APA)
+
+### Measure enrichment of Hi-C signal for specifics features (loop, TAD boundaries, ChIP-seq peaks, ...)
+
+.center[
+&lt;img src="imgs/APA.svg" width="80%" /&gt;
+#### `pileup` function from `cooltools`
+]
+
+Many tools offer APA implementation :
+* `FAN-C` with `fanc aggregate inter.hic TADs.bed` (`BED`/`BEDPE`)
+* `cooltools` with `pileup`  (`BED`/`BEDPE`)
+* `juicer-tool` with `apa inter.hic all_loops.txt` (`BEDPE`)
+* `HiCExplorer` with `hicAggregateContacts`: (`BED`)
+  `hicAggregateContacts --matrix inter.h5 --BED TADs.bed`
+
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; APA with `R`
+
+#### Load Genomic Positions `.bed`
+
+
+```r
+require(plyranges)
+gamma_domains80 &lt;- "../HiC_group_meeting_files/BLESS_80best_JunFragPE_Rmdups_pm500bp.bed" %&gt;% 
+  read_bed() %&gt;% anchor_center() %&gt;% mutate(width=1000000) %&gt;% 
+  filter(seqnames =="chr1")
+```
+
+#### Extract sub-matrix for each position (working with `HiTC::HTCexp` object)
+.pull-left[
+
+```r
+extractCounts &lt;- function(bed,HTC){
+* overlaps &lt;- findOverlaps(bed,x_intervals(HTC))
+  i &lt;- subjectHits(overlaps)
+  intdata(HTC)[i,i] %&gt;% round()
+}
+
+res.HiC &lt;- 1:length(gamma_domains80) %&gt;% map(function(i){
+  extractCounts(gamma_domains80[i],HTC)
+})
+
+res.HiC &lt;- res.HiC%&gt;% plyr::compact()
+*res.HiC &lt;- Reduce("+",res.HiC)
+colnames(res.HiC) &lt;- rownames(res.HiC) &lt;- 1:ncol(res.HiC)
+res.HiC %&gt;% as.matrix()
+```
+]
+
+.pull-right[
+
+```
+##        1     2     3     4     5     6     7     8     9    10    11
+## 1  47966 12066  4652  3846  2849  2281  1269   903   832   680   570
+## 2  12066 54716 11830  5907  5662  3094  1515  1210  1109   978   827
+## 3   4652 11830 48983 13535  8369  4104  1933  1292  1177  1018   865
+## 4   3846  5907 13535 56669 13946  5952  2335  1794  1499  1307  1272
+## 5   2849  5662  8369 13946 52578 12407  3045  2236  1970  1743  1741
+## 6   2281  3094  4104  5952 12407 52423 10775  4237  3840  3256  3277
+## 7   1269  1515  1933  2335  3045 10775 47159 11732  6490  4726  4036
+## 8    903  1210  1292  1794  2236  4237 11732 49619 13526  6905  4541
+## 9    832  1109  1177  1499  1970  3840  6490 13526 57470 15295  8041
+## 10   680   978  1018  1307  1743  3256  4726  6905 15295 56099 13379
+## 11   570   827   865  1272  1741  3277  4036  4541  8041 13379 52166
+```
+]
+
+#### plot heatmap with `ggplot2`
+
+.pull-left[
+
+```r
+*p1 &lt;- res.HiC %&gt;% as.matrix() %&gt;% reshape2::melt() %&gt;%
+  ggplot(aes(x=Var1,y=Var2,fill=log10(value))) + geom_tile() +
+  xlab("bin2") + ylab("bin2") +theme_classic() + scale_fill_gradient(low="white",high="red")
+print(p1)
+```
+]
+
+.pull-right[
+&lt;img src="index_files/figure-html/plot-label-out-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; Differential APA with `R`
+
+
+
+
+
+
+
+
+```r
+*DiffOHTDIVA &lt;- log2(res.HiC.OHT/res.HiC) %&gt;%
+  as.matrix() %&gt;% reshape2::melt()
+```
+
+
+
+.pull-left[
+
+
+```r
+maxval &lt;- max(DiffOHTDIVA$value)
+p2 &lt;- DiffOHTDIVA %&gt;%
+  ggplot(aes(x=Var1,y=Var2,fill=value)) +
+  geom_tile() +
+  xlab("bin2") + ylab("bin2") +theme_classic() +
+  scale_fill_gradient2(low="blue",mid = "black",high="yellow",midpoint = 0,limits = c(-maxval,maxval))
+print(p2)
+```
+]
+.pull-right[
+&lt;img src="index_files/figure-html/unnamed-chunk-64-1.svg" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+---
+## &lt;svg viewBox="0 0 640 512" style="position:relative;display:inline-block;top:.1em;fill: #e74c3c;height:1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M255.03 261.65c6.25 6.25 16.38 6.25 22.63 0l11.31-11.31c6.25-6.25 6.25-16.38 0-22.63L253.25 192l35.71-35.72c6.25-6.25 6.25-16.38 0-22.63l-11.31-11.31c-6.25-6.25-16.38-6.25-22.63 0l-58.34 58.34c-6.25 6.25-6.25 16.38 0 22.63l58.35 58.34zm96.01-11.3l11.31 11.31c6.25 6.25 16.38 6.25 22.63 0l58.34-58.34c6.25-6.25 6.25-16.38 0-22.63l-58.34-58.34c-6.25-6.25-16.38-6.25-22.63 0l-11.31 11.31c-6.25 6.25-6.25 16.38 0 22.63L386.75 192l-35.71 35.72c-6.25 6.25-6.25 16.38 0 22.63zM624 416H381.54c-.74 19.81-14.71 32-32.74 32H288c-18.69 0-33.02-17.47-32.77-32H16c-8.8 0-16 7.2-16 16v16c0 35.2 28.8 64 64 64h512c35.2 0 64-28.8 64-64v-16c0-8.8-7.2-16-16-16zM576 48c0-26.4-21.6-48-48-48H112C85.6 0 64 21.6 64 48v336h512V48zm-64 272H128V64h384v256z"&gt;&lt;/path&gt;&lt;/svg&gt; APA with `R`
+
+### Using `InteractionSet` classe
+
+
+```r
+res_sub_hic &lt;- 1:length(gamma_domains80) %&gt;% map(function(i){
+  startpos &lt;- my.ranges %&gt;% filter_by_overlaps(gamma_domains80[i]) %&gt;% as_tibble() %&gt;% slice(1) %&gt;% pull(start)
+  
+  out &lt;- linkOverlaps(iset, gamma_domains80[i]) 
+  
+  siset &lt;- iset[out$query]
+  cbind(pos1=(start(anchors(siset)$first)-startpos+1),
+        pos2=(start(anchors(siset)$second)-startpos+1),
+        assay(siset))  %&gt;% as_tibble()
+}) %&gt;% setNames(gamma_domains80$name) %&gt;% bind_rows(.id="DSB")
+
+res_sub_hic &lt;- res_sub_hic %&gt;%
+  gather(key=Condition,value=value,-DSB:-pos2) %&gt;% 
+* group_by(pos1,pos2,Condition) %&gt;% summarise(value = sum(value))
+```
+
+
+
+.pull-left[
+
+&lt;img src="index_files/figure-html/unnamed-chunk-66-1.svg" style="display: block; margin: auto;" /&gt;
+
+]
+--
+
+.pull-right[
+
+
+```r
+res_sub_hic_2 &lt;- rbind(
+  res_sub_hic,
+  res_sub_hic %&gt;% filter(pos1!=pos2) %&gt;% dplyr::rename("pos3"=pos2) %&gt;% dplyr::rename("pos1"=pos3,"pos2"=pos1)
+) 
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-68-1.svg" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+---
+
+# References
+
+&lt;a name=bib-abdennur2020cooler&gt;&lt;/a&gt;[Abdennur, N. and L. A.
+Mirny](#cite-abdennur2020cooler) (2020). "Cooler: scalable storage for
+Hi-C data and other genomically labeled arrays". In: _Bioinformatics_
+36.1, pp. 311-316.
+
+&lt;a name=bib-arnould2021loop&gt;&lt;/a&gt;[Arnould, C., V. Rocher, A. Finoux, et
+al.](#cite-arnould2021loop) (2021). "Loop extrusion as a mechanism for
+formation of DNA damage repair foci". In: _Nature_ 590.7847, pp.
+660-665.
+
+&lt;a name=bib-ay2015analysis&gt;&lt;/a&gt;[Ay, F. and W. S.
+Noble](#cite-ay2015analysis) (2015). "Analysis methods for studying the
+3D architecture of the genome". In: _Genome biology_ 16.1, pp. 1-15.
+
+&lt;a name=bib-chang2020tads&gt;&lt;/a&gt;[Chang, L., S. Ghosh, and D.
+Noordermeer](#cite-chang2020tads) (2020). "TADs and their borders: free
+movement or building a wall?" In: _Journal of molecular biology_ 432.3,
+pp. 643-652.
+
+&lt;a name=bib-crane2015condensin&gt;&lt;/a&gt;[Crane, E., Q. Bian, R. P. McCord,
+et al.](#cite-crane2015condensin) (2015). "Condensin-driven remodelling
+of X chromosome topology during dosage compensation". In: _Nature_
+523.7559, pp. 240-244.
+
+---
+
+# References
+
+&lt;a name=bib-dixon2012topological&gt;&lt;/a&gt;[Dixon, J. R., S. Selvaraj, F.
+Yue, et al.](#cite-dixon2012topological) (2012). "Topological domains
+in mammalian genomes identified by analysis of chromatin interactions".
+In: _Nature_ 485.7398, pp. 376-380.
+
+&lt;a name=bib-durand2016juicer&gt;&lt;/a&gt;[Durand, N. C., M. S. Shamim, I.
+Machol, et al.](#cite-durand2016juicer) (2016). "Juicer provides a
+one-click system for analyzing loop-resolution Hi-C experiments". In:
+_Cell systems_ 3.1, pp. 95-98.
+
+&lt;a name=bib-imakaev2012iterative&gt;&lt;/a&gt;[Imakaev, M., G. Fudenberg, R. P.
+McCord, et al.](#cite-imakaev2012iterative) (2012). "Iterative
+correction of Hi-C data reveals hallmarks of chromosome organization".
+In: _Nature methods_ 9.10, pp. 999-1003.
+
+&lt;a name=bib-kempfer2020methods&gt;&lt;/a&gt;[Kempfer, R. and A.
+Pombo](#cite-kempfer2020methods) (2020). "Methods for mapping 3D
+chromosome architecture". In: _Nature Reviews Genetics_ 21.4, pp.
+207-226.
+
+&lt;a name=bib-lieberman2009comprehensive&gt;&lt;/a&gt;[Lieberman-Aiden, E., N. L.
+Van Berkum, L. Williams, et al.](#cite-lieberman2009comprehensive)
+(2009). "Comprehensive mapping of long-range interactions reveals
+folding principles of the human genome". In: _science_ 326.5950, pp.
+289-293.
+
+&lt;a name=bib-naumova2013organization&gt;&lt;/a&gt;[Naumova, N., M. Imakaev, G.
+Fudenberg, et al.](#cite-naumova2013organization) (2013). "Organization
+of the mitotic chromosome". In: _Science_ 342.6161, pp. 948-953.
+
+---
+
+# References
+
+&lt;a name=bib-pal2019hi&gt;&lt;/a&gt;[Pal, K., M. Forcato, and F.
+Ferrari](#cite-pal2019hi) (2019). "Hi-C analysis: from data generation
+to integration". In: _Biophysical reviews_ 11.1, pp. 67-78.
+
+&lt;a name=bib-rao20143d&gt;&lt;/a&gt;[Rao, S. S., M. H. Huntley, N. C. Durand, et
+al.](#cite-rao20143d) (2014). "A 3D map of the human genome at kilobase
+resolution reveals principles of chromatin looping". In: _Cell_ 159.7,
+pp. 1665-1680.
+
+&lt;a name=bib-serra2017automatic&gt;&lt;/a&gt;[Serra, F., D. Baù, M. Goodstadt, et
+al.](#cite-serra2017automatic) (2017). "Automatic analysis and
+3D-modelling of Hi-C data using TADbit reveals structural features of
+the fly chromatin colors". In: _PLoS computational biology_ 13.7, p.
+e1005665.
+
+&lt;a name=bib-servant2015hic&gt;&lt;/a&gt;[Servant, N., N. Varoquaux, B. R.
+Lajoie, et al.](#cite-servant2015hic) (2015). "HiC-Pro: an optimized
+and flexible pipeline for Hi-C data processing". In: _Genome biology_
+16.1, pp. 1-11.
+
+&lt;a name=bib-wingett2015hicup&gt;&lt;/a&gt;[Wingett, S., P. Ewels, M.
+Furlan-Magaril, et al.](#cite-wingett2015hicup) (2015). "HiCUP:
+pipeline for mapping and processing Hi-C data". In: _F1000Research_ 4.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="./macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
