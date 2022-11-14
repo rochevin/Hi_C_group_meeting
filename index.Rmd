@@ -229,6 +229,7 @@ knitr::include_url('https://data.4dnucleome.org/',height="400px")
 
 * JuicerTools `r Citep(bib, "durand2016juicer")`
 * Output a `.hic` file (non human readable)
+* (ENCODE project use their own custom Juicer pipeline)[https://github.com/ENCODE-DCC/hic-pipeline].
 
 ### distiller (previously hiclib)
 
@@ -237,6 +238,11 @@ knitr::include_url('https://data.4dnucleome.org/',height="400px")
 * distiller pipeline: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3350937.svg)](https://doi.org/10.5281/zenodo.3350937)
 * Output a `.mcool` file (non human readable)
 
+#### `config.yml/.txt` will contain chromosome sizes, reference genome, which digestion enzyme is used ....
+
+---
+
+## `r icons::icon_style(icons::fontawesome("laptop-code", style = "solid"), scale = 1, fill = " #e74c3c")` HiC pipelines
 
 ### HiC-pro
 
